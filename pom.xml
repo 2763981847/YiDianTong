@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.4</version>
+        <version>2.2.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.oreki</groupId>
@@ -23,7 +23,7 @@
         <cloud.version>Hoxton.RELEASE</cloud.version>
         <alibaba.version>2.2.0.RELEASE</alibaba.version>
         <mybatis-plus.version>3.3.1</mybatis-plus.version>
-        <mysql.version>5.1.46</mysql.version>
+        <mysql.version>5.1.47</mysql.version>
         <swagger.version>2.7.0</swagger.version>
         <jwt.version>0.7.0</jwt.version>
         <fastjson.version>1.2.29</fastjson.version>
@@ -32,11 +32,19 @@
         <aliyun.version>4.1.1</aliyun.version>
         <oss.version>3.9.1</oss.version>
         <jodatime.version>2.10.1</jodatime.version>
+        <knife4j.version>2.0.9</knife4j.version>
+        <springfox.version>3.0.0</springfox.version>
+        <devtools.version>2.2.1.RELEASE</devtools.version>
     </properties>
 
     <!--配置dependencyManagement锁定依赖的版本-->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>${springfox.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -120,6 +128,16 @@
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>${jodatime.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-devtools</artifactId>
+                <version>${devtools.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

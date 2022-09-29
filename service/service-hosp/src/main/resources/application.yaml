@@ -1,0 +1,27 @@
+server:
+  port: 8201
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/yygh_hosp?characterEncoding=utf-8&useSSL=false
+    username: root
+    password: fqj15823968817
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  application:
+    name: service-cmn
+  #热部署配置
+  devtools:
+    restart:
+      enabled: true
+      #设置修改文件后需要重启的目录
+      additional-paths: src/main/java
+      #记住第一个参数的时间要大于第二个参数
+      poll-interval: 2s
+      quiet-period: 1s
+mybatis-plus:
+  mapper-locations: classpath:com/oreki/yygh/mapper/xml/*.xml
+
+
+

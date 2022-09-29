@@ -8,11 +8,11 @@
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>1.0</version>
-    <artifactId>service-hosp</artifactId>
+
+    <artifactId>service-cmn</artifactId>
     <packaging>jar</packaging>
-    <name>service-hosp</name>
-    <description>service-hosp</description>
+    <name>service-cmn</name>
+    <description>service-cmn</description>
 
 
     <build>
@@ -27,8 +27,7 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
-
-        <finalName>service-hosp</finalName>
+        <finalName>service-cmn</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -39,5 +38,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -5,17 +5,19 @@ import com.oreki.yygh.model.cmn.Dict;
 import com.oreki.yygh.service.DictService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
 @Api(value = "数据字典controller")
 @RequestMapping("admin/cmn/dict")
+@CrossOrigin
 public class DictController {
     @Resource
     private DictService dictService;
@@ -27,4 +29,15 @@ public class DictController {
         return Result.ok(children);
     }
 
+    @ApiOperation("数据字典导出")
+    @GetMapping("exportDict")
+    public void exportDict(HttpServletResponse response) {
+        dictService.exportDict(response);
+    }
+
+    @ApiOperation("数据字典导入")
+    @PostMapping("importDict")
+    public void importDict(MultipartFile file) {
+        dictService.importDict(file);
+    }
 }

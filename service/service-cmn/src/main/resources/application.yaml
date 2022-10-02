@@ -20,7 +20,17 @@ spring:
       #记住第一个参数的时间要大于第二个参数
       poll-interval: 2s
       quiet-period: 1s
+  redis:
+    host: 39.108.166.210
+    port: 6379
+    database: 0
+    timeout: 1800000
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        max-idle: 5
+        min-idle: 0
+    password: fqj15823968817
 mybatis-plus:
   mapper-locations: classpath:com/oreki/yygh/mapper/xml/*.xml
-
-

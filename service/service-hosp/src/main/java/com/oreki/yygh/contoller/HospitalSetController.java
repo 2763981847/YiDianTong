@@ -17,8 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
-@CrossOrigin       //允许跨域访问
-@Api(tags = "医院设置controller")
+@Api(tags = "医院设置接口")
 public class HospitalSetController {
     @Resource
     HospitalSetService hospitalSetService;

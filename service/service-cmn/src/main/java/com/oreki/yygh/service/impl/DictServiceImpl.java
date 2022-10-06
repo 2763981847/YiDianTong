@@ -8,14 +8,17 @@ import com.oreki.yygh.model.cmn.Dict;
 import com.oreki.yygh.service.DictService;
 import com.oreki.yygh.mapper.DictMapper;
 import com.oreki.yygh.vo.cmn.DictEeVo;
+import jdk.nashorn.internal.ir.IfNode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,6 +73,10 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         }
     }
 
+    /**
+     * 从Excel中导入数据到数据字典
+     * @param multipartFile 表格
+     */
     @Override
     @CacheEvict(value = "dict", allEntries = true)
     public void importDict(MultipartFile multipartFile) {
@@ -78,6 +85,60 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 获取数据字典名称
+     *
+     * @param parentDictCode 上级编码
+     * @param value          值
+     * @return 数据字典名称
+     */
+    @Override
+    public String getDictName(String parentDictCode, String value) {
+        //上级编码为空则根据值查询
+        LambdaQueryWrapper<Dict> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.isEmpty(parentDictCode)) {
+            queryWrapper.eq(Dict::getValue, value);
+            Dict dict = this.getOne(queryWrapper);
+            return dict.getName();
+        }
+        //不为空则根据上级编码和值查询
+        else {
+            Long parentId = getDictByDictCode(parentDictCode).getId();
+            queryWrapper.eq(Dict::getValue, value).eq(Dict::getParentId, parentId);
+            Dict dict = this.getOne(queryWrapper);
+            return dict.getName();
+        }
+    }
+
+    /**
+     * 根据dictCode获取下级节点
+     *
+     * @param dictCode 数据字典编码
+     * @return 下级节点列表
+     */
+    @Override
+    public List<Dict> listChildrenByDictCode(String dictCode) {
+        //先拿到父级节点
+        Dict dict = getDictByDictCode(dictCode);
+        //为空则返回空列表
+        if (dict == null) return new ArrayList<>();
+        //不为空则查询子级列表
+        Long id = dict.getId();
+        return this.getChildren(id);
+    }
+
+    /**
+     * 根据节点的编码拿到节点
+     *
+     * @param dictCode 节点编码
+     * @return 查询到的节点
+     */
+    private Dict getDictByDictCode(String dictCode) {
+        LambdaQueryWrapper<Dict> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Dict::getDictCode, dictCode);
+        return this.getOne(queryWrapper);
     }
 
     /**

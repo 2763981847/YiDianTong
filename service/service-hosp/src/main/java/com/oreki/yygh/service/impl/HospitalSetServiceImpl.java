@@ -77,4 +77,19 @@ public class HospitalSetServiceImpl extends ServiceImpl<HospitalSetMapper, Hospi
                 .set(HospitalSet::getStatus, status);
         return this.update(updateWrapper);
     }
+
+    /**
+     * 根据医院编码拿到签名密钥
+     *
+     * @param hoscode 医院编码
+     * @return 签名密钥
+     */
+    @Override
+    public String getSignByHoscode(String hoscode) {
+        LambdaQueryWrapper<HospitalSet> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(HospitalSet::getHoscode, hoscode);
+        HospitalSet hospitalSet = this.getOne(queryWrapper);
+        if (hospitalSet != null) return hospitalSet.getSignKey();
+        else return "";
+    }
 }

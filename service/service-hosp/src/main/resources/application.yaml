@@ -1,16 +1,16 @@
 server:
   port: 8201
 spring:
+  application:
+    name: service-hosp
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/yygh_hosp?characterEncoding=utf-8&useSSL=false
-    username: root
+    url: jdbc:mysql://39.108.166.210:3306/yygh_hosp?characterEncoding=utf-8&useSSL=false
+    username: oreki
     password: fqj15823968817
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-  application:
-    name: service-cmn
   #热部署配置
   devtools:
     restart:
@@ -20,8 +20,15 @@ spring:
       #记住第一个参数的时间要大于第二个参数
       poll-interval: 2s
       quiet-period: 1s
+  data:
+    mongodb:
+      uri: mongodb://39.108.166.210:27017/yygh_hosp
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 39.108.166.210:8848
+        cluster-name: service-hosp
 mybatis-plus:
   mapper-locations: classpath:com/oreki/yygh/mapper/xml/*.xml
-
 
 

@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @Api(value = "数据字典controller")
 @RequestMapping("admin/cmn/dict")
-@CrossOrigin
 public class DictController {
     @Resource
     private DictService dictService;
@@ -39,5 +38,26 @@ public class DictController {
     @PostMapping("importDict")
     public void importDict(MultipartFile file) {
         dictService.importDict(file);
+    }
+
+    @ApiOperation(value = "根据上级编码和值获取数据字典名称")
+    @GetMapping(value = "/getName/{parentDictCode}/{value}")
+    public Result getDictName(@PathVariable String parentDictCode, @PathVariable String value) {
+        String name = dictService.getDictName(parentDictCode, value);
+        return Result.ok(name);
+    }
+
+    @ApiOperation(value = "根据值获取数据字典名称")
+    @GetMapping(value = "/getName/{value}")
+    public Result getDictName(@PathVariable String value) {
+        String name = dictService.getDictName("", value);
+        return Result.ok(name);
+    }
+
+    @ApiOperation(value = "根据dictCode获取下级节点")
+    @GetMapping(value = "/findByDictCode/{dictCode}")
+    public Result listChildrenByDictCode(@PathVariable String dictCode) {
+        List<Dict> list = dictService.listChildrenByDictCode(dictCode);
+        return Result.ok(list);
     }
 }

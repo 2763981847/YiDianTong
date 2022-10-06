@@ -14,7 +14,17 @@
     <name>service-hosp</name>
     <description>service-hosp</description>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oreki</groupId>
+            <artifactId>service_cmn_client</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
     <build>
         <resources>
             <resource>

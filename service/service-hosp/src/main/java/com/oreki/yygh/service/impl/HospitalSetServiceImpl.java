@@ -2,10 +2,9 @@ package com.oreki.yygh.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.oreki.yygh.common.utils.MD5;
+import com.oreki.yygh.common.util.MD5;
 import com.oreki.yygh.model.hosp.HospitalSet;
 import com.oreki.yygh.service.HospitalSetService;
 import com.oreki.yygh.mapper.HospitalSetMapper;

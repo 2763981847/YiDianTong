@@ -12,9 +12,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class HospitalServiceImpl implements HospitalService {
@@ -76,7 +74,7 @@ public class HospitalServiceImpl implements HospitalService {
         //查询结果
         Page<Hospital> pages = hospitalRepository.findAll(example, pageable);
         List<Hospital> hospitals = pages.getContent();
-        hospitals.forEach(this::setHospital);
+        hospitals.forEach(this::setHospitalDetail);
         return pages;
     }
 
@@ -99,7 +97,33 @@ public class HospitalServiceImpl implements HospitalService {
         return true;
     }
 
-    private Hospital setHospital(Hospital hospital) {
+    /**
+     * 根据医院名称查询医院列表
+     *
+     * @param hosname 医院名称
+     * @return 医院列表
+     */
+    @Override
+    public List<Hospital> listByHosname(String hosname) {
+        List<Hospital> hospitals = hospitalRepository.getHospitalsByHosnameLike(hosname);
+        return hospitals == null ? new ArrayList<>() : hospitals;
+    }
+
+    /**
+     * 根据医院编号查询医院详细信息
+     *
+     * @param hoscode 医院编号
+     * @return 医院详细信息
+     */
+    @Override
+    public Hospital getHospitalDetail(String hoscode) {
+        Hospital hospital = this.getByHoscode(hoscode);
+        this.setHospitalDetail(hospital);
+        return hospital;
+    }
+
+
+    private void setHospitalDetail(Hospital hospital) {
         //先根据dictCode和value查询医院的等级名称
         String hostype = (String) dictFeignClient.getDictName("Hostype", hospital.getHostype()).getData();
         //再根据value查询医院的地址名称
@@ -108,6 +132,5 @@ public class HospitalServiceImpl implements HospitalService {
         String district = (String) dictFeignClient.getDictName(hospital.getDistrictCode()).getData();
         hospital.getParam().put("hostype", hostype);
         hospital.getParam().put("fullAddress", province + city + district);
-        return hospital;
     }
 }

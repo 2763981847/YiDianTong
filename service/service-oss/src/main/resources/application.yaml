@@ -1,0 +1,19 @@
+server:
+  port: 8205
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  application:
+    name: service-oss
+  cloud:
+    nacos:
+      discovery:
+        cluster-name: service-oss
+        server-addr: 175.178.193.148:8848
+aliyun:
+  oss:
+    endpoint: oss-cn-shenzhen.aliyuncs.com
+    accessKeyId: LTAI5t6tPaWWTdeup14aDrwu
+    secret: WQdXvvFd09YnmInf8q4mj2EyNPvBLP
+    bucket: yidiantong-oreki

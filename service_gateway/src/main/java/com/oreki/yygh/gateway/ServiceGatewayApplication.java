@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
  * @date : 2022/10/5 17:32
  */
 @SpringBootApplication
-@CrossOrigin
 public class ServiceGatewayApplication {
     public static void main(String[] args) {
         SpringApplication.run(ServiceGatewayApplication.class, args);

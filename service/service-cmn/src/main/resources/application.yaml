@@ -3,7 +3,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://39.108.166.210:3306/yygh_cmn?characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://175.178.193.148:3306/yygh_cmn?characterEncoding=utf-8&useSSL=false
     username: oreki
     password: fqj15823968817
   jackson:
@@ -21,7 +21,7 @@ spring:
       poll-interval: 2s
       quiet-period: 1s
   redis:
-    host: 39.108.166.210
+    host: 175.178.193.148
     port: 6379
     database: 0
     timeout: 1800000
@@ -36,6 +36,6 @@ spring:
     nacos:
       discovery:
         cluster-name: service-cmn
-        server-addr: 39.108.166.210:8848
+        server-addr: 175.178.193.148:8848
 mybatis-plus:
   mapper-locations: classpath:com/oreki/yygh/mapper/xml/*.xml

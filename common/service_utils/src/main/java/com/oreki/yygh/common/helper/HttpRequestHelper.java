@@ -1,12 +1,10 @@
 package com.oreki.yygh.common.helper;
 
 import com.alibaba.fastjson.JSONObject;
-import com.oreki.yygh.common.utils.HttpUtil;
-import com.oreki.yygh.common.utils.MD5;
+import com.oreki.yygh.common.util.HttpUtil;
+import com.oreki.yygh.common.util.MD5;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.DigestUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,15 +13,6 @@ import java.util.TreeMap;
 @Slf4j
 public class HttpRequestHelper {
 
-    public static void main(String[] args) {
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("d", "4");
-        paramMap.put("b", "2");
-        paramMap.put("c", "3");
-        paramMap.put("a", "1");
-        paramMap.put("timestamp", getTimestamp());
-        log.info(getSign(paramMap, "111111111"));
-    }
 
     /**
      *

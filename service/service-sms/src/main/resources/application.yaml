@@ -1,0 +1,42 @@
+server:
+  port: 8204
+spring:
+  redis:
+    host: 175.178.193.148
+    port: 6379
+    database: 0
+    timeout: 1800000
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        max-idle: 5
+        min-idle: 0
+    password: fqj15823968817
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  application:
+    name: service-sms
+    #热部署配置
+  devtools:
+    restart:
+      enabled: true
+      #设置修改文件后需要重启的目录
+      additional-paths: src/main/java
+      #记住第一个参数的时间要大于第二个参数
+      poll-interval: 2s
+      quiet-period: 1s
+  cloud:
+    nacos:
+      discovery:
+        cluster-name: service-sms
+        server-addr: 175.178.193.148:8848
+aliyun:
+  sms:
+    regionId: default
+    accessKeyId: LTAI5t6tPaWWTdeup14aDrwu
+    secret: WQdXvvFd09YnmInf8q4mj2EyNPvBLP
+#  aliyun.sms.regionId=default
+#  aliyun.sms.accessKeyId=LT6I0Y5633pX89qC
+#  aliyun.sms.secret=jX8D04Dm12I3gGKj345FYSzu0fq8mT

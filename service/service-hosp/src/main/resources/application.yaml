@@ -5,7 +5,7 @@ spring:
     name: service-hosp
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://39.108.166.210:3306/yygh_hosp?characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://175.178.193.148:3306/yygh_hosp?characterEncoding=utf-8&useSSL=false
     username: oreki
     password: fqj15823968817
   jackson:
@@ -22,11 +22,11 @@ spring:
       quiet-period: 1s
   data:
     mongodb:
-      uri: mongodb://39.108.166.210:27017/yygh_hosp
+      uri: mongodb://175.178.193.148:27017/yygh_hosp
   cloud:
     nacos:
       discovery:
-        server-addr: 39.108.166.210:8848
+        server-addr: 175.178.193.148:8848
         cluster-name: service-hosp
 mybatis-plus:
   mapper-locations: classpath:com/oreki/yygh/mapper/xml/*.xml

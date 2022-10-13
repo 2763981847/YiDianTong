@@ -6,15 +6,16 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 39.108.166.210:8848
+        server-addr: 175.178.193.148:8848
         cluster-name: service-gateway
     gateway:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins:   # 允许哪些网站的跨域请求 allowedOrigins: “*” 允许所有网站
+            allowedOrigins: # 允许哪些网站的跨域请求 allowedOrigins: “*” 允许所有网站
               - "http://localhost:9528"
-            allowedMethods:   # 允许的跨域ajax的请求方式
+              - "http://localhost:3000"
+            allowedMethods: # 允许的跨域ajax的请求方式
               - "GET"
               - "POST"
               - "DELETE"
@@ -35,3 +36,15 @@ spring:
           uri: lb://service-cmn
           predicates:
             - Path=/*/cmn/**
+        - id: service-user
+          uri: lb://service-user
+          predicates:
+            - Path=/*/user/**,/*/ucenter/**
+        - id: service-sms
+          uri: lb://service-sms
+          predicates:
+            - Path=/*/sms/**
+        - id: service-oss
+          uri: lb://service-oss
+          predicates:
+            - Path=/*/oss/**

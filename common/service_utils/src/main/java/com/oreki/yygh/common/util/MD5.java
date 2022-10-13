@@ -1,4 +1,4 @@
-package com.oreki.yygh.common.utils;
+package com.oreki.yygh.common.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

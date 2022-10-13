@@ -4,6 +4,7 @@ import com.oreki.yygh.model.hosp.Hospital;
 import com.oreki.yygh.vo.hosp.HospitalQueryVo;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Map;
 
 public interface HospitalService {
@@ -14,4 +15,9 @@ public interface HospitalService {
     Page<Hospital> listHospitals(int page, int limit, HospitalQueryVo hospitalQueryVo);
 
     boolean updateStatus(String id, int status);
+
+    List<Hospital> listByHosname(String hosname);
+
+
+    Hospital getHospitalDetail(String hoscode);
 }

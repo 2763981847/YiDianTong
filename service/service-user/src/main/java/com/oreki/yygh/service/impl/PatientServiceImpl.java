@@ -1,7 +1,7 @@
 package com.oreki.yygh.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.oreki.yygh.Patient;
+import com.oreki.yygh.model.user.Patient;
 import com.oreki.yygh.service.PatientService;
 import com.oreki.yygh.mapper.PatientMapper;
 import org.springframework.stereotype.Service;

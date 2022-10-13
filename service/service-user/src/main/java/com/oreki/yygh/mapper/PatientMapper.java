@@ -1,7 +1,7 @@
 package com.oreki.yygh.mapper;
 
-import com.oreki.yygh.Patient;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.oreki.yygh.model.user.Patient;
 
 /**
 * @author 27639

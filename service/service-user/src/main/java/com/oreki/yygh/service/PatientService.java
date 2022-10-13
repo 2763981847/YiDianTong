@@ -1,7 +1,7 @@
 package com.oreki.yygh.service;
 
-import com.oreki.yygh.Patient;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.oreki.yygh.model.user.Patient;
 
 /**
 * @author 27639

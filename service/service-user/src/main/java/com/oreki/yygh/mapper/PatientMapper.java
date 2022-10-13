@@ -11,6 +11,7 @@ import com.oreki.yygh.model.user.Patient;
 */
 public interface PatientMapper extends BaseMapper<Patient> {
 
+
 }
 
 

@@ -1,6 +1,7 @@
 package com.oreki.yygh.service;
 
 import com.oreki.yygh.model.hosp.Schedule;
+import com.oreki.yygh.vo.hosp.ScheduleOrderVo;
 import com.oreki.yygh.vo.hosp.ScheduleQueryVo;
 import org.springframework.data.domain.Page;
 
@@ -18,4 +19,12 @@ public interface ScheduleService {
     Map<String, Object> listSchedules(int page, int limit, String hoscode, String depcode);
 
     List<Schedule> listScheduleDetails(String hoscode, String depcode, Date workDate);
+
+    Map<String, Object> getBookingSchedulePage(Integer page, Integer limit, String hoscode, String depcode);
+
+    Schedule getScheduleById(String id);
+
+    ScheduleOrderVo getScheduleOrderVo(String scheduleId);
+
+    void mqUpdate(Schedule schedule);
 }

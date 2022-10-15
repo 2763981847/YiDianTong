@@ -22,20 +22,20 @@ public class DictController {
     private DictService dictService;
 
     @ApiOperation("根据数据id查询其子数据列表")
-    @GetMapping("getChildren/{id}")
+    @GetMapping("/getChildren/{id}")
     public Result getChildren(@PathVariable long id) {
         List<Dict> children = dictService.getChildren(id);
         return Result.ok(children);
     }
 
     @ApiOperation("数据字典导出")
-    @GetMapping("exportDict")
+    @GetMapping("/exportDict")
     public void exportDict(HttpServletResponse response) {
         dictService.exportDict(response);
     }
 
     @ApiOperation("数据字典导入")
-    @PostMapping("importDict")
+    @PostMapping("/importDict")
     public void importDict(MultipartFile file) {
         dictService.importDict(file);
     }

@@ -1,14 +1,18 @@
 package com.oreki.yygh.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.oreki.yygh.common.exception.YyghException;
+import com.oreki.yygh.common.result.ResultCodeEnum;
 import com.oreki.yygh.common.util.MD5;
 import com.oreki.yygh.model.hosp.HospitalSet;
 import com.oreki.yygh.service.HospitalSetService;
 import com.oreki.yygh.mapper.HospitalSetMapper;
 import com.oreki.yygh.vo.hosp.HospitalSetQueryVo;
+import com.oreki.yygh.vo.order.SignInfoVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -90,5 +94,26 @@ public class HospitalSetServiceImpl extends ServiceImpl<HospitalSetMapper, Hospi
         HospitalSet hospitalSet = this.getOne(queryWrapper);
         if (hospitalSet != null) return hospitalSet.getSignKey();
         else return "";
+    }
+
+    /**
+     * 获取医院签名信息
+     *
+     * @param hoscode 医院编码
+     * @return 医院签名
+     */
+    @Override
+    public SignInfoVo getSignInfoVo(String hoscode) {
+        LambdaQueryWrapper<HospitalSet> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(HospitalSet::getHoscode, hoscode);
+        HospitalSet hospitalSet = this.getOne(wrapper);
+        if (null == hospitalSet) {
+            throw new YyghException(ResultCodeEnum.HOSPITAL_OPEN);
+        }
+        SignInfoVo signInfoVo = new SignInfoVo();
+        signInfoVo.setApiUrl(hospitalSet.getApiUrl());
+        signInfoVo.setSignKey(hospitalSet.getSignKey());
+        return signInfoVo;
+
     }
 }

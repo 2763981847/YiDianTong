@@ -1,4 +1,4 @@
-package com.oreki.yygh.controller;
+package com.oreki.yygh.controller.api;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

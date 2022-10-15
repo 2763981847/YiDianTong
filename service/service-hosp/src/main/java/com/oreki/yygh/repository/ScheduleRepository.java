@@ -18,4 +18,6 @@ public interface ScheduleRepository extends MongoRepository<Schedule, String> {
     void deleteByHoscodeAndHosScheduleId(String hoscode, String hosScheduleId);
 
     List<Schedule> getSchedulesByHoscodeAndDepcodeAndWorkDate(String hoscode, String depcode, Date workDate);
+
+    Schedule getScheduleById(String id);
 }

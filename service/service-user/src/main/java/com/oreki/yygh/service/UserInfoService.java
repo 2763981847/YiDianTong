@@ -1,9 +1,11 @@
 package com.oreki.yygh.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.oreki.yygh.model.user.UserInfo;
 import com.oreki.yygh.vo.user.LoginVo;
 import com.oreki.yygh.vo.user.UserAuthVo;
+import com.oreki.yygh.vo.user.UserInfoQueryVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -22,4 +24,12 @@ public interface UserInfoService extends IService<UserInfo> {
     UserInfo getByPhone(String phone);
 
     void userAuth(UserAuthVo userAuthVo, HttpServletRequest request);
+
+    Page<UserInfo> listUserPages(int page, int limit, UserInfoQueryVo userInfoQueryVo);
+
+    void updateStatus(long id, int status);
+
+    Map<String, Object> getUserDetails(long id);
+
+    void updateAuthStatus(long id, int authStatus);
 }

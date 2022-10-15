@@ -1,6 +1,16 @@
 server:
   port: 8201
 spring:
+  redis:
+    host: 175.178.193.148
+    port: 6379
+    database: 0
+    timeout: 1800000
+  rabbitmq:
+    host: 175.178.193.148
+    port: 5672
+    username: guest
+    password: guest
   application:
     name: service-hosp
   datasource:

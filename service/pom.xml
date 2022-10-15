@@ -18,6 +18,7 @@
         <module>service-user</module>
         <module>service-sms</module>
         <module>service-oss</module>
+        <module>service-order</module>
     </modules>
     <dependencies>
         <dependency>

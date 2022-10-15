@@ -8,6 +8,7 @@ import com.oreki.yygh.common.result.Result;
 import com.oreki.yygh.model.hosp.HospitalSet;
 import com.oreki.yygh.vo.hosp.HospitalQueryVo;
 import com.oreki.yygh.vo.hosp.HospitalSetQueryVo;
+import com.oreki.yygh.vo.order.SignInfoVo;
 import org.springframework.web.bind.annotation.PathVariable;
 
 /**
@@ -23,4 +24,6 @@ public interface HospitalSetService extends IService<HospitalSet> {
     boolean changeHospSetStatus(long id, int status);
 
     String getSignByHoscode(String hoscode);
+
+    SignInfoVo getSignInfoVo(String hoscode);
 }

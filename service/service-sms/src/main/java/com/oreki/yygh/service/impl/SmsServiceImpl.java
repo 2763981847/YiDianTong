@@ -12,7 +12,9 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.oreki.yygh.common.constant.UserConstant;
 import com.oreki.yygh.service.SmsService;
 import com.oreki.yygh.utils.ConstantPropertiesUtil;
+import com.oreki.yygh.vo.msm.MsmVo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,5 +64,18 @@ public class SmsServiceImpl implements SmsService {
         }
         return false;
 
+    }
+
+    /**
+     * mq发送短信
+     *
+     * @param msmVo 短信内容
+     * @return 发送是否成功
+     */
+    @Override
+    public boolean mqSend(MsmVo msmVo) {
+        if (StringUtils.isEmpty(msmVo.getPhone())) return false;
+        String code = (String) msmVo.getParam().get("code");
+        return this.sendCode(msmVo.getPhone(), code);
     }
 }

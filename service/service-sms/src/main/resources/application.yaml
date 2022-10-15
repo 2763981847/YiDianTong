@@ -1,6 +1,11 @@
 server:
   port: 8204
 spring:
+  rabbitmq:
+    host: 175.178.193.148
+    port: 5672
+    username: guest
+    password: guest
   redis:
     host: 175.178.193.148
     port: 6379

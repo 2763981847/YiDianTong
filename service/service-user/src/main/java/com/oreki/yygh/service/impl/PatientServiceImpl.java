@@ -62,7 +62,7 @@ public class PatientServiceImpl extends ServiceImpl<PatientMapper, Patient>
      *
      * @param patient patient对象
      */
-    private void packagePatient(Patient patient) {
+    public void packagePatient(Patient patient) {
         //拿到证件类型的名称
         String certificatesTypeString =
                 (String) dictFeignClient.getDictName(DictEnum.CERTIFICATES_TYPE.getDictCode(), patient.getCertificatesType()).getData();

@@ -1,4 +1,4 @@
-package com.oreki.yygh.controller;
+package com.oreki.yygh.controller.api;
 
 import com.oreki.yygh.common.result.Result;
 import com.oreki.yygh.common.util.AuthContextHolder;
@@ -6,6 +6,7 @@ import com.oreki.yygh.model.user.Patient;
 import com.oreki.yygh.service.PatientService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -63,4 +64,11 @@ public class PatientApiController {
         boolean flag = patientService.removeById(id);
         return Result.judge(flag);
     }
+
+    @ApiOperation(value = "根据id获取就诊人信息")
+    @GetMapping("inner/{id}")
+    public Patient getPatientOrder(@PathVariable("id") Long id) {
+        return patientService.getById(id);
+    }
+
 }

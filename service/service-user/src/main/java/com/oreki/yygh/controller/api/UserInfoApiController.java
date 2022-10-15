@@ -1,4 +1,4 @@
-package com.oreki.yygh.controller;
+package com.oreki.yygh.controller.api;
 
 import com.oreki.yygh.common.result.Result;
 import com.oreki.yygh.common.util.AuthContextHolder;
@@ -47,5 +47,6 @@ public class UserInfoApiController {
         UserInfo userInfo = userInfoService.getById(userId);
         return Result.ok(userInfo);
     }
+
 }
 

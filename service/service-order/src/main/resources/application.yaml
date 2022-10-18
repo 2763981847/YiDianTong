@@ -6,6 +6,13 @@ spring:
     port: 6379
     database: 0
     timeout: 1800000
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        max-idle: 5
+        min-idle: 0
+    password: fqj15823968817
   rabbitmq:
     host: 175.178.193.148
     port: 5672
@@ -37,3 +44,15 @@ spring:
         server-addr: 175.178.193.148:8848
 mybatis-plus:
   mapper-locations: classpath:com/oreki/yygh/mapper/xml/*.xml
+weixin:
+  pay:
+    appid: wx74862e0dfcf69954
+    partner: 1558950191
+    partnerKey: T6m9iK73b0kn9g5v426MKfHQH7X8rKwb
+
+##关联的公众号appid
+#  weixin.pay.appid=wx74862e0dfcf69954
+#  #商户号
+#  weixin.pay.partner=1558950191
+#  #商户key
+#  weixin.pay.partnerKey=T6m9iK73b0kn9g5v426MKfHQH7X8rKwb

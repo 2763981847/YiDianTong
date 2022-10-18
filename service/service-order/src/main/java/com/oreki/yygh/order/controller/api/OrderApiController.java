@@ -1,17 +1,19 @@
 package com.oreki.yygh.order.controller.api;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.oreki.yygh.common.result.Result;
+import com.oreki.yygh.common.util.AuthContextHolder;
+import com.oreki.yygh.enums.OrderStatusEnum;
+import com.oreki.yygh.model.order.OrderInfo;
 import com.oreki.yygh.order.service.OrderInfoService;
+import com.oreki.yygh.vo.order.OrderQueryVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author : Fu QiuJie
@@ -32,6 +34,28 @@ public class OrderApiController {
             @ApiParam(name = "patientId", value = "就诊人id", required = true)
             @PathVariable Long patientId) {
         return Result.ok(orderInfoService.saveOrder(scheduleId, patientId));
+    }
+
+    @ApiOperation("根据订单id查询订单详情")
+    @GetMapping("auth/{id}")
+    public Result getById(@PathVariable Long id) {
+        OrderInfo orderInfo = orderInfoService.getOrderDetails(id);
+        return Result.ok(orderInfo);
+    }
+
+    @ApiOperation("条件查询订单分页")
+    @GetMapping("auth/{page}/{limit}")
+    public Result getOrdersPage(@PathVariable int page, @PathVariable int limit, OrderQueryVo orderQueryVo, HttpServletRequest request) {
+        //设置当前用户id
+        orderQueryVo.setUserId(AuthContextHolder.getUserId(request));
+        Page<OrderInfo> orderInfoPage = orderInfoService.getOrdersPage(page, limit, orderQueryVo);
+        return Result.ok(orderInfoPage);
+    }
+
+    @ApiOperation("获取所以订单状态")
+    @GetMapping("auth/orderStatus")
+    public Result listOrderStatus() {
+        return Result.ok(OrderStatusEnum.getStatusList());
     }
 
 }

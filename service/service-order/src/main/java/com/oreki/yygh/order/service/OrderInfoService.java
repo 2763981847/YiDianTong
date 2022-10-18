@@ -1,8 +1,10 @@
 package com.oreki.yygh.order.service;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.oreki.yygh.model.order.OrderInfo;
+import com.oreki.yygh.vo.order.OrderQueryVo;
 
 /**
 * @author 27639
@@ -12,4 +14,8 @@ import com.oreki.yygh.model.order.OrderInfo;
 public interface OrderInfoService extends IService<OrderInfo> {
 
     long saveOrder(String scheduleId, Long patientId);
+
+    OrderInfo getOrderDetails(Long id);
+
+    Page<OrderInfo> getOrdersPage(int page, int limit, OrderQueryVo orderQueryVo);
 }

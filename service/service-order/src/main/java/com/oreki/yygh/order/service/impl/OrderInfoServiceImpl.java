@@ -2,6 +2,8 @@ package com.oreki.yygh.order.service.impl;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oreki.common.rabbit.constant.MQConstant;
 import com.oreki.common.rabbit.service.RabbitService;
@@ -18,10 +20,12 @@ import com.oreki.yygh.user.client.UserFeignClient;
 import com.oreki.yygh.vo.hosp.ScheduleOrderVo;
 import com.oreki.yygh.vo.msm.MsmVo;
 import com.oreki.yygh.vo.order.OrderMqVo;
+import com.oreki.yygh.vo.order.OrderQueryVo;
 import com.oreki.yygh.vo.order.SignInfoVo;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -128,6 +132,50 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         //返回订单id
         return orderInfo.getId();
+    }
+
+    /**
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderInfo getOrderDetails(Long id) {
+        OrderInfo orderInfo = this.getById(id);
+        this.packageOrder(orderInfo);
+        return orderInfo;
+    }
+
+    @Override
+    public Page<OrderInfo> getOrdersPage(int page, int limit, OrderQueryVo orderQueryVo) {
+        Page<OrderInfo> orderInfoPage = new Page<>(page, limit);
+        //取出查询条件
+        Long userId = orderQueryVo.getUserId();
+        String orderStatus = orderQueryVo.getOrderStatus();
+        String patientName = orderQueryVo.getPatientName();
+        Long patientId = orderQueryVo.getPatientId();
+        String keyword = orderQueryVo.getKeyword();      //医院名称
+        String createTimeBegin = orderQueryVo.getCreateTimeBegin();
+        String createTimeEnd = orderQueryVo.getCreateTimeEnd();
+        String reserveDate = orderQueryVo.getReserveDate();
+        //构建查询wrapper
+        LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(userId != null, OrderInfo::getUserId, userId)
+                .eq(!StringUtils.isEmpty(patientId), OrderInfo::getPatientId, patientId)
+                .eq(!StringUtils.isEmpty(orderStatus), OrderInfo::getOrderStatus, orderStatus)
+                .like(!StringUtils.isEmpty(patientName), OrderInfo::getPatientName, patientName)
+                .like(!StringUtils.isEmpty(keyword), OrderInfo::getHosname, keyword)
+                .ge(!StringUtils.isEmpty(createTimeBegin), OrderInfo::getCreateTime, createTimeBegin)
+                .le(!StringUtils.isEmpty(createTimeEnd), OrderInfo::getCreateTime, createTimeEnd)
+                .eq(!StringUtils.isEmpty(reserveDate), OrderInfo::getReserveDate, reserveDate)
+                .orderByAsc(OrderInfo::getReserveDate);
+        this.page(orderInfoPage, queryWrapper);
+        //将订单状态进行包装
+        orderInfoPage.getRecords().forEach(this::packageOrder);
+        return orderInfoPage;
+    }
+
+    private void packageOrder(OrderInfo orderInfo) {
+        orderInfo.getParam().put("orderStatusString", OrderStatusEnum.getStatusNameByStatus(orderInfo.getOrderStatus()));
     }
 
     /**

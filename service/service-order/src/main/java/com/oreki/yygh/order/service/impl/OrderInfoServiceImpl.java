@@ -16,21 +16,19 @@ import com.oreki.yygh.model.order.OrderInfo;
 import com.oreki.yygh.model.user.Patient;
 import com.oreki.yygh.order.service.OrderInfoService;
 import com.oreki.yygh.order.mapper.OrderInfoMapper;
+import com.oreki.yygh.order.service.WeixinService;
 import com.oreki.yygh.user.client.UserFeignClient;
 import com.oreki.yygh.vo.hosp.ScheduleOrderVo;
 import com.oreki.yygh.vo.msm.MsmVo;
-import com.oreki.yygh.vo.order.OrderMqVo;
-import com.oreki.yygh.vo.order.OrderQueryVo;
-import com.oreki.yygh.vo.order.SignInfoVo;
+import com.oreki.yygh.vo.order.*;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author 27639
@@ -42,11 +40,14 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         implements OrderInfoService {
 
     @Resource
+    private WeixinService weixinService;
+    @Resource
     private UserFeignClient userFeignClient;
     @Resource
     private HospitalFeignClient hospitalFeignClient;
     @Resource
     private RabbitService rabbitService;
+
 
     /**
      * 提交订单并返回订单id
@@ -73,7 +74,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         //添加其他信息到orderInfo
         String outTradeNo = System.currentTimeMillis() + "" + new Random().nextInt(100);
         orderInfo.setOutTradeNo(outTradeNo);
-        orderInfo.setScheduleId(scheduleOrderVo.getHosScheduleId());
+        orderInfo.setScheduleId(scheduleId);
+        orderInfo.setHosScheduleId(scheduleOrderVo.getHosScheduleId());
         orderInfo.setUserId(patient.getUserId());
         orderInfo.setPatientId(patientId);
         orderInfo.setPatientName(patient.getName());
@@ -106,7 +108,6 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Integer reservedNumber = jsonObject.getInteger("reservedNumber");
         //排班剩余预约数
         Integer availableNumber = jsonObject.getInteger("availableNumber");
-        // todo 发送mq信息更新号源和短信通知
         //号源更新
         OrderMqVo orderMqVo = new OrderMqVo();
         orderMqVo.setAvailableNumber(availableNumber);
@@ -174,6 +175,100 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         return orderInfoPage;
     }
 
+    /**
+     * 取消预约
+     *
+     * @param orderId 订单id
+     * @return 是否取消成功
+     */
+    @Override
+    public boolean cancelOrder(Long orderId) {
+        //获取到该订单
+        OrderInfo orderInfo = this.getById(orderId);
+        //判断就诊时间是否已过
+        if (new DateTime(orderInfo.getReserveDate()).isBeforeNow()) {
+            throw new YyghException(ResultCodeEnum.CANCEL_ORDER_NO);
+        }
+        SignInfoVo signInfoVo = hospitalFeignClient.getSignInfoVo(orderInfo.getHoscode());
+        Map<String, Object> reqMap = getReqMap(orderInfo, signInfoVo);
+        JSONObject result = HttpRequestHelper.sendRequest(reqMap, signInfoVo.getApiUrl() + "/order/updateCancelStatus");
+        if (result.getInteger("code") != 200) {
+            throw new YyghException(result.getString("message"), ResultCodeEnum.FAIL.getCode());
+        } else {
+            //是否支付 退款
+            if (orderInfo.getOrderStatus().intValue() == OrderStatusEnum.PAID.getStatus().intValue()) {
+                //已支付 退款
+                boolean isRefund = weixinService.refund(orderId);
+                if (!isRefund) {
+                    throw new YyghException(ResultCodeEnum.CANCEL_ORDER_FAIL);
+                }
+            }
+            //更改订单状态
+            orderInfo.setOrderStatus(OrderStatusEnum.CANCLE.getStatus());
+            this.updateById(orderInfo);
+            //发送mq信息更新预约数 我们与下单成功更新预约数使用相同的mq信息，不设置可预约数与剩余预约数，接收端可预约数减1即可
+            OrderMqVo orderMqVo = new OrderMqVo();
+            orderMqVo.setScheduleId(orderInfo.getScheduleId());
+            //短信提示
+            MsmVo msmVo = new MsmVo();
+            msmVo.setPhone(orderInfo.getPatientPhone());
+            String reserveDate =
+                    new DateTime(orderInfo.getReserveDate()).toString("yyyy-MM-dd")
+                            + (orderInfo.getReserveTime() == 0 ? "上午" : "下午");
+            Map<String, Object> param = new HashMap<String, Object>() {{
+                put("title", orderInfo.getHosname() + "|" + orderInfo.getDepname() + "|" + orderInfo.getTitle());
+                put("reserveDate", reserveDate);
+                put("name", orderInfo.getPatientName());
+            }};
+            msmVo.setParam(param);
+            orderMqVo.setMsmVo(msmVo);
+            rabbitService.sendMessage(MQConstant.EXCHANGE_DIRECT_ORDER, MQConstant.ROUTING_ORDER, orderMqVo);
+            return true;
+        }
+    }
+
+    public Map<String, Object> getReqMap(OrderInfo orderInfo, SignInfoVo signInfoVo) {
+        if (null == signInfoVo) {
+            throw new YyghException(ResultCodeEnum.PARAM_ERROR);
+        }
+        Map<String, Object> reqMap = new HashMap<>();
+        reqMap.put("hoscode", orderInfo.getHoscode());
+        reqMap.put("hosRecordId", orderInfo.getHosRecordId());
+        reqMap.put("timestamp", HttpRequestHelper.getTimestamp());
+        String sign = HttpRequestHelper.getSign(reqMap, signInfoVo.getSignKey());
+        reqMap.put("sign", sign);
+        return reqMap;
+    }
+
+    /**
+     * 实现预约统计
+     *
+     * @param orderCountQueryVo 预约条件查询
+     * @return 统计信息
+     */
+    @Override
+    public Map<String, Object> getCountMap(OrderCountQueryVo orderCountQueryVo) {
+        //查询数据库
+        List<OrderCountVo> orderCountVoList = baseMapper.selectOrderCount(orderCountQueryVo);
+        //获取x轴数据
+        List<String> dateList = new LinkedList<>();
+        //获取y轴数据
+        List<Integer> countList = new LinkedList<>();
+        for (OrderCountVo orderCountVo : orderCountVoList) {
+            dateList.add(orderCountVo.getReserveDate());
+            countList.add(orderCountVo.getCount());
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("dateList", dateList);
+        map.put("countList", countList);
+        return map;
+    }
+
+    /**
+     * 将订单状态文字信息打包到返回数据中
+     *
+     * @param orderInfo 订单信息
+     */
     private void packageOrder(OrderInfo orderInfo) {
         orderInfo.getParam().put("orderStatusString", OrderStatusEnum.getStatusNameByStatus(orderInfo.getOrderStatus()));
     }
@@ -190,7 +285,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("hoscode", orderInfo.getHoscode());
         paramMap.put("depcode", orderInfo.getDepcode());
-        paramMap.put("hosScheduleId", orderInfo.getScheduleId());
+        paramMap.put("hosScheduleId", orderInfo.getHosScheduleId());
         paramMap.put("reserveDate", new DateTime(orderInfo.getReserveDate()).toString("yyyy-MM-dd"));
         paramMap.put("reserveTime", orderInfo.getReserveTime());
         paramMap.put("amount", orderInfo.getAmount());

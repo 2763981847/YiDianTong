@@ -1,0 +1,10 @@
+server:
+  port: 8208
+spring:
+  application:
+    name: service-statistics
+  cloud:
+    nacos:
+      discovery:
+        cluster-name: service-statistics
+        server-addr: 175.178.193.148:8848

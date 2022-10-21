@@ -95,16 +95,23 @@ public class PaymentInfoServiceImpl extends ServiceImpl<PaymentInfoMapper, Payme
         orderInfoService.updateById(orderInfo);
         //调用医院接口，更新订单支付状态
         SignInfoVo signInfoVo = hospitalFeignClient.getSignInfoVo(orderInfo.getHoscode());
-        if (signInfoVo == null) {
-            throw new YyghException(ResultCodeEnum.PARAM_ERROR);
-        }
-        Map<String, Object> reqMap = new HashMap<>();
-        reqMap.put("hoscode", orderInfo.getHoscode());
-        reqMap.put("hosRecordId", orderInfo.getHosRecordId());
-        reqMap.put("timestamp", HttpRequestHelper.getTimestamp());
-        String sign = HttpRequestHelper.getSign(reqMap, signInfoVo.getSignKey());
-        reqMap.put("sign", sign);
+        Map<String, Object> reqMap = orderInfoService.getReqMap(orderInfo, signInfoVo);
         HttpRequestHelper.sendRequest(reqMap, signInfoVo.getApiUrl() + "/order/updatePayStatus");
+    }
+
+    /**
+     * 根据订单id和支付类型获取支付记录
+     *
+     * @param orderId     订单id
+     * @param paymentType 支付类型
+     * @return 支付记录
+     */
+    @Override
+    public PaymentInfo getPaymentInfo(long orderId, Integer paymentType) {
+        LambdaQueryWrapper<PaymentInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PaymentInfo::getOrderId, orderId)
+                .eq(PaymentInfo::getPaymentType, paymentType);
+        return this.getOne(queryWrapper);
     }
 }
 

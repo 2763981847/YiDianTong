@@ -145,8 +145,7 @@ public class HttpClient {
         try {
             if (isHttps) {
                 if (isCert) {
-                    // todo
-                    FileInputStream inputStream = new FileInputStream(new File(""));
+                    FileInputStream inputStream = new FileInputStream(WXConstantProperties.CERT_PATH);
                     KeyStore keystore = KeyStore.getInstance("PKCS12");
                     char[] partnerId2charArray = certPassword.toCharArray();
                     keystore.load(inputStream, partnerId2charArray);

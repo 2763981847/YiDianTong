@@ -52,3 +52,7 @@ spring:
           uri: lb://service-order
           predicates:
             - Path=/*/order/**
+        - id: service-statistics
+          uri: lb://service-statistics
+          predicates:
+            - Path=/*/statistics/**

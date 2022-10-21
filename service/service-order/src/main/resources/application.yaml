@@ -43,12 +43,13 @@ spring:
         cluster-name: service-order
         server-addr: 175.178.193.148:8848
 mybatis-plus:
-  mapper-locations: classpath:com/oreki/yygh/mapper/xml/*.xml
+  mapper-locations: classpath:com/oreki/yygh/order/mapper/xml/*
 weixin:
   pay:
     appid: wx74862e0dfcf69954
     partner: 1558950191
     partnerKey: T6m9iK73b0kn9g5v426MKfHQH7X8rKwb
+    certPath: C:\Users\27639\Desktop\java\YiDianTong_parent\service\service-order\src\main\resources\cert\apiclient_cert.p12
 
 ##关联的公众号appid
 #  weixin.pay.appid=wx74862e0dfcf69954

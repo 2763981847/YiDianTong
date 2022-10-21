@@ -8,8 +8,10 @@ import java.util.Map;
  * @author : Fu QiuJie
  * @date : 2022/10/18 10:45
  */
-public interface WeixinService  {
+public interface WeixinService {
     Map<String, Object> getQRCode(Long orderId);
 
     Map<String, String> getPayStatus(Long orderId);
+
+    boolean refund(Long orderId);
 }

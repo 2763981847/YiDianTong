@@ -1,11 +1,17 @@
 package com.oreki.yygh.order.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.github.wxpay.sdk.WXPayConstants;
 import com.github.wxpay.sdk.WXPayUtil;
 import com.oreki.yygh.common.exception.YyghException;
 import com.oreki.yygh.common.result.ResultCodeEnum;
 import com.oreki.yygh.enums.PaymentTypeEnum;
+import com.oreki.yygh.enums.RefundStatusEnum;
 import com.oreki.yygh.model.order.OrderInfo;
+import com.oreki.yygh.model.order.PaymentInfo;
+import com.oreki.yygh.model.order.RefundInfo;
 import com.oreki.yygh.order.service.OrderInfoService;
+import com.oreki.yygh.order.service.RefundInfoService;
 import com.oreki.yygh.order.service.WeixinService;
 import com.oreki.yygh.order.util.HttpClient;
 import com.oreki.yygh.order.util.WXConstantProperties;
@@ -15,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +37,9 @@ public class WeixinServiceImpl implements WeixinService {
     private OrderInfoService orderInfoService;
     @Resource
     private PaymentInfoServiceImpl paymentInfoService;
+
+    @Resource
+    private RefundInfoService refundInfoService;
 
     @Resource
     private RedisTemplate redisTemplate;
@@ -113,6 +123,59 @@ public class WeixinServiceImpl implements WeixinService {
             return resultMap;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /**
+     * 微信支付退款
+     *
+     * @param orderId 订单id
+     * @return 退款是否成功
+     */
+    @Override
+    public boolean refund(Long orderId) {
+        //获取到支付记录
+        PaymentInfo paymentInfo = paymentInfoService.getPaymentInfo(orderId, PaymentTypeEnum.WEIXIN.getStatus());
+        //新增到退款记录表中
+        RefundInfo refundInfo = refundInfoService.saveRefundInfo(paymentInfo);
+        //判断当前订单是否已经退款
+        if (RefundStatusEnum.REFUND.getStatus().equals(refundInfo.getRefundStatus())) {
+            return true;
+        }
+        //调用微信接口退款
+        Map<String, String> paramMap = new HashMap<>(8);
+        paramMap.put("appid", WXConstantProperties.APPID);       //公众账号ID
+        paramMap.put("mch_id", WXConstantProperties.PARTNER);   //商户编号
+        paramMap.put("nonce_str", WXPayUtil.generateNonceStr());
+        paramMap.put("transaction_id", paymentInfo.getTradeNo()); //微信订单号
+        paramMap.put("out_trade_no", paymentInfo.getOutTradeNo()); //商户订单编号
+        paramMap.put("out_refund_no", "tk" + paymentInfo.getOutTradeNo()); //商户退款单号
+//       paramMap.put("total_fee",paymentInfo.getTotalAmount().multiply(new BigDecimal("100")).longValue()+"");
+//       paramMap.put("refund_fee",paymentInfo.getTotalAmount().multiply(new BigDecimal("100")).longValue()+"");
+        paramMap.put("total_fee", "1");
+        paramMap.put("refund_fee", "1");
+        try {
+            String paramXml = WXPayUtil.generateSignedXml(paramMap, WXConstantProperties.PARTNER_KEY);
+            HttpClient client = new HttpClient("https://api.mch.weixin.qq.com/secapi/pay/refund");
+            client.setXmlParam(paramXml);
+            client.setHttps(true);
+            client.setCert(true);
+            client.setCertPassword(WXConstantProperties.PARTNER);
+            client.post();
+            //3、返回第三方的数据
+            String xml = client.getContent();
+            Map<String, String> resultMap = WXPayUtil.xmlToMap(xml);
+            if (!resultMap.isEmpty() && WXPayConstants.SUCCESS.equalsIgnoreCase(resultMap.get("result_code"))) {
+                refundInfo.setCallbackTime(new Date());
+                refundInfo.setTradeNo(resultMap.get("refund_id"));
+                refundInfo.setRefundStatus(RefundStatusEnum.REFUND.getStatus());
+                refundInfo.setCallbackContent(JSONObject.toJSONString(resultMap));
+                refundInfoService.updateById(refundInfo);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
         }
     }
 }

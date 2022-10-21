@@ -5,35 +5,36 @@
 <mapper namespace="com.oreki.yygh.order.mapper.OrderInfoMapper">
 
     <resultMap id="BaseResultMap" type="com.oreki.yygh.model.order.OrderInfo">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="userId" column="user_id" jdbcType="BIGINT"/>
-            <result property="outTradeNo" column="out_trade_no" jdbcType="VARCHAR"/>
-            <result property="hoscode" column="hoscode" jdbcType="VARCHAR"/>
-            <result property="hosname" column="hosname" jdbcType="VARCHAR"/>
-            <result property="depcode" column="depcode" jdbcType="VARCHAR"/>
-            <result property="depname" column="depname" jdbcType="VARCHAR"/>
-            <result property="title" column="title" jdbcType="VARCHAR"/>
-            <result property="hosScheduleId" column="hos_schedule_id" jdbcType="VARCHAR"/>
-            <result property="reserveDate" column="reserve_date" jdbcType="DATE"/>
-            <result property="reserveTime" column="reserve_time" jdbcType="TINYINT"/>
-            <result property="patientId" column="patient_id" jdbcType="BIGINT"/>
-            <result property="patientName" column="patient_name" jdbcType="VARCHAR"/>
-            <result property="patientPhone" column="patient_phone" jdbcType="VARCHAR"/>
-            <result property="hosRecordId" column="hos_record_id" jdbcType="VARCHAR"/>
-            <result property="number" column="number" jdbcType="INTEGER"/>
-            <result property="fetchTime" column="fetch_time" jdbcType="VARCHAR"/>
-            <result property="fetchAddress" column="fetch_address" jdbcType="VARCHAR"/>
-            <result property="amount" column="amount" jdbcType="DECIMAL"/>
-            <result property="quitTime" column="quit_time" jdbcType="TIMESTAMP"/>
-            <result property="orderStatus" column="order_status" jdbcType="TINYINT"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-            <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
-            <result property="scheduleId" column="schedule_id" jdbcType="VARCHAR"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="outTradeNo" column="out_trade_no" jdbcType="VARCHAR"/>
+        <result property="hoscode" column="hoscode" jdbcType="VARCHAR"/>
+        <result property="hosname" column="hosname" jdbcType="VARCHAR"/>
+        <result property="depcode" column="depcode" jdbcType="VARCHAR"/>
+        <result property="depname" column="depname" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="hosScheduleId" column="hos_schedule_id" jdbcType="VARCHAR"/>
+        <result property="reserveDate" column="reserve_date" jdbcType="DATE"/>
+        <result property="reserveTime" column="reserve_time" jdbcType="TINYINT"/>
+        <result property="patientId" column="patient_id" jdbcType="BIGINT"/>
+        <result property="patientName" column="patient_name" jdbcType="VARCHAR"/>
+        <result property="patientPhone" column="patient_phone" jdbcType="VARCHAR"/>
+        <result property="hosRecordId" column="hos_record_id" jdbcType="VARCHAR"/>
+        <result property="number" column="number" jdbcType="INTEGER"/>
+        <result property="fetchTime" column="fetch_time" jdbcType="VARCHAR"/>
+        <result property="fetchAddress" column="fetch_address" jdbcType="VARCHAR"/>
+        <result property="amount" column="amount" jdbcType="DECIMAL"/>
+        <result property="quitTime" column="quit_time" jdbcType="TIMESTAMP"/>
+        <result property="orderStatus" column="order_status" jdbcType="TINYINT"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
+        <result property="scheduleId" column="schedule_id" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,out_trade_no,
+        id
+        ,user_id,out_trade_no,
         hoscode,hosname,depcode,
         depname,title,hos_schedule_id,
         reserve_date,reserve_time,patient_id,
@@ -43,4 +44,24 @@
         create_time,update_time,is_deleted,
         schedule_id
     </sql>
+    <select id="selectOrderCount" resultType="com.oreki.yygh.vo.order.OrderCountVo">
+        select reserve_date as reserveDate, count(reserve_date) as count
+        from order_info
+        <where>
+            <if test="vo.hosname != null and vo.hosname != ''">
+                and hosname like CONCAT('%',#{vo.hosname},'%')
+            </if>
+            <if test="vo.reserveDateBegin != null and vo.reserveDateBegin != ''">
+                and reserve_date >= #{vo.reserveDateBegin}
+            </if>
+            <if test="vo.reserveDateEnd != null and vo.reserveDateEnd != ''">
+                and reserve_date &lt;= #{vo.reserveDateEnd}
+            </if>
+            and is_deleted = 0
+        </where>
+        group by reserve_date
+        order by reserve_date
+    </select>
+
 </mapper>
+

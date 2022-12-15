@@ -6,7 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 175.178.193.148:8848
+        server-addr: ${TENCENT_HOST}:8848
         cluster-name: service-gateway
     gateway:
       globalcors:

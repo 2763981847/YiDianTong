@@ -2,7 +2,7 @@ server:
   port: 8206
 spring:
   redis:
-    host: 175.178.193.148
+    host: ${TENCENT_HOST}
     port: 6379
     database: 0
     timeout: 1800000
@@ -12,17 +12,17 @@ spring:
         max-wait: -1
         max-idle: 5
         min-idle: 0
-    password: fqj15823968817
+    password: ${PASSWORD}}
   rabbitmq:
-    host: 175.178.193.148
+    host: ${TENCENT_HOST}
     port: 5672
     username: guest
     password: guest
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://175.178.193.148:3306/yygh_order?characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://${TENCENT_HOST}:3306/yygh_order?characterEncoding=utf-8&useSSL=false
     username: oreki
-    password: fqj15823968817
+    password: ${PASSWORD}}
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -41,7 +41,7 @@ spring:
     nacos:
       discovery:
         cluster-name: service-order
-        server-addr: 175.178.193.148:8848
+        server-addr: ${TENCENT_HOST}:8848
 mybatis-plus:
   mapper-locations: classpath:com/oreki/yygh/order/mapper/xml/*
 weixin:

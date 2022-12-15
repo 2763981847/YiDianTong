@@ -10,10 +10,10 @@ spring:
     nacos:
       discovery:
         cluster-name: service-oss
-        server-addr: 175.178.193.148:8848
+        server-addr: ${TENCENT_HOST}:8848
 aliyun:
   oss:
     endpoint: oss-cn-shenzhen.aliyuncs.com
-    accessKeyId: LTAI5t6tPaWWTdeup14aDrwu
-    secret: WQdXvvFd09YnmInf8q4mj2EyNPvBLP
+    accessKeyId: LTAI5tA2YTNq9cW6jakNQpye
+    secret: ${Aliyun_AccessKey_Secret}
     bucket: yidiantong-oreki

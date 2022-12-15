@@ -2,12 +2,12 @@ server:
   port: 8204
 spring:
   rabbitmq:
-    host: 175.178.193.148
+    host: ${TENCENT_HOST}
     port: 5672
     username: guest
     password: guest
   redis:
-    host: 175.178.193.148
+    host: ${TENCENT_HOST}
     port: 6379
     database: 0
     timeout: 1800000
@@ -17,7 +17,7 @@ spring:
         max-wait: -1
         max-idle: 5
         min-idle: 0
-    password: fqj15823968817
+    password: ${PASSWORD}}
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -36,12 +36,12 @@ spring:
     nacos:
       discovery:
         cluster-name: service-sms
-        server-addr: 175.178.193.148:8848
+        server-addr: ${TENCENT_HOST}:8848
 aliyun:
   sms:
     regionId: default
-    accessKeyId: LTAI5t6tPaWWTdeup14aDrwu
-    secret: WQdXvvFd09YnmInf8q4mj2EyNPvBLP
+    accessKeyId: LTAI5tA2YTNq9cW6jakNQpye
+    secret: ${Aliyun_AccessKey_Secret}
 #  aliyun.sms.regionId=default
 #  aliyun.sms.accessKeyId=LT6I0Y5633pX89qC
 #  aliyun.sms.secret=jX8D04Dm12I3gGKj345FYSzu0fq8mT
